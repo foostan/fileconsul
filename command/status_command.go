@@ -9,28 +9,32 @@ import (
 
 var StatusFlags = []cli.Flag{
 	cli.StringFlag{
-		Name:  "base-dir",
-		Usage: "base directory of target files",
-	},
-	cli.StringFlag{
 		Name:  "addr",
 		Value: "127.0.0.1:8500",
 		Usage: "consul HTTP API address with port",
 	},
 	cli.StringFlag{
 		Name:  "dc",
-		Value: "local",
+		Value: "",
 		Usage: "consul datacenter, uses local if blank",
+	},
+	cli.StringFlag{
+		Name:  "prefix",
+		Value: "fileconsul",
+		Usage: "reading file status from Consul's K/V store with the given prefix",
+	},
+	cli.StringFlag{
+		Name:  "base-dir",
+		Value: ".",
+		Usage: "base directory of target files",
 	},
 }
 
 func StatusCommand(c *cli.Context) {
-	baseDir := c.String("base-dir")
-	if baseDir == "" {
-		log.Fatalf("Error missing flag 'base-dir'")
-	}
 	addr := c.String("addr")
 	dc := c.String("dc")
+	prefix := c.String("prefix")
+	baseDir := c.String("base-dir")
 
 	client, err := NewClient(&ClientConfig{
 		ConsulAddr: addr,
@@ -40,7 +44,7 @@ func StatusCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	err = client.GetFileStatus(baseDir)
+	err = client.GetFileStatus(prefix, baseDir)
 	if err != nil {
 		log.Fatal(err)
 	}
