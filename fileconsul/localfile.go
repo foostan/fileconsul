@@ -12,7 +12,7 @@ type FileHash struct {
 	Hash string
 }
 
-func ReadFileHashs(paths []string) ([]FileHash, error) {
+func FileHashs(paths []string) ([]FileHash, error) {
 	fileHashs := make([]FileHash, 0)
 
 	for _, path := range paths {
@@ -47,7 +47,7 @@ func ReadFileHashs(paths []string) ([]FileHash, error) {
 
 		for _, fi := range contents {
 			subpath := filepath.Join(path, fi.Name())
-			subpathFileHashs, err := ReadFileHashs([]string{subpath})
+			subpathFileHashs, err := FileHashs([]string{subpath})
 			if err != nil {
 				return nil, err
 			}
