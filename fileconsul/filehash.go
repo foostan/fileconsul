@@ -28,48 +28,6 @@ func (fhA *FileHash) In(fhsB []FileHash) bool {
 	return false
 }
 
-func LocalFileHashs(path string) ([]FileHash, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, fmt.Errorf("Error reading '%s': %s", path, err)
-	}
-
-	fi, err := f.Stat()
-	if err != nil {
-		f.Close()
-		return nil, fmt.Errorf("Error reading '%s': %s", path, err)
-	}
-
-	fileHashs := make([]FileHash, 0)
-	if fi.IsDir() {
-		contents, err := f.Readdir(-1)
-		if err != nil {
-			return nil, fmt.Errorf("Error reading '%s': %s", path, err)
-		}
-
-		for _, fi := range contents {
-			subpath := filepath.Join(path, fi.Name())
-			subpathFileHashs, err := LocalFileHashs(subpath)
-			if err != nil {
-				return nil, err
-			}
-			fileHashs = append(fileHashs, subpathFileHashs...)
-		}
-	} else {
-		data := make([]byte, fi.Size())
-		_, err := f.Read(data)
-		if err != nil {
-			return nil, fmt.Errorf("Error reading '%s': %s", path, err)
-		}
-		hash := fmt.Sprintf("%x", md5.Sum(data))
-
-		fileHashs = append(fileHashs, FileHash{Path: path, Hash: hash})
-	}
-
-	f.Close()
-	return fileHashs, nil
-}
-
 func DiffFileHashs(fhsA []FileHash, fhsB []FileHash) ([]FileHash, error) {
 	diffFhs := make([]FileHash, 0)
 
@@ -82,6 +40,59 @@ func DiffFileHashs(fhsA []FileHash, fhsB []FileHash) ([]FileHash, error) {
 	return diffFhs, nil
 }
 
+func LocalFileHashs(basepath string) ([]FileHash, error) {
+
+	fileHashs := make([]FileHash, 0)
+	searchPaths := []string{basepath}
+
+	for len(searchPaths) > 0 {
+		path := searchPaths[len(searchPaths)-1]
+		searchPaths = searchPaths[:len(searchPaths)-1]
+
+		f, err := os.Open(path)
+		if err != nil {
+			return nil, fmt.Errorf("Error reading '%s': %s", path, err)
+		}
+
+		fi, err := f.Stat()
+		if err != nil {
+			f.Close()
+			return nil, fmt.Errorf("Error reading '%s': %s", path, err)
+		}
+
+		if fi.IsDir() {
+			contents, err := f.Readdir(-1)
+			if err != nil {
+				return nil, fmt.Errorf("Error reading '%s': %s", path, err)
+			}
+
+			for _, fi := range contents {
+				subpath := filepath.Join(path, fi.Name())
+				searchPaths = append(searchPaths, subpath)
+			}
+		} else {
+			data := make([]byte, fi.Size())
+			_, err := f.Read(data)
+			if err != nil {
+				return nil, fmt.Errorf("Error reading '%s': %s", path, err)
+			}
+
+			relPath, err := filepath.Rel(basepath, path)
+			if err != nil {
+				return nil, fmt.Errorf("Invalid path '%s': %s", path, err)
+			}
+
+			hash := fmt.Sprintf("%x", md5.Sum(data))
+
+			fileHashs = append(fileHashs, FileHash{Path: relPath, Hash: hash})
+		}
+
+		f.Close()
+	}
+
+	return fileHashs, nil
+}
+
 func RemoteFileHashs(client *Client, prefix string) ([]FileHash, error) {
 	kvpairs, err := client.GetKVByKeyprefix(prefix)
 	if err != nil {
@@ -90,7 +101,12 @@ func RemoteFileHashs(client *Client, prefix string) ([]FileHash, error) {
 
 	fileHashs := make([]FileHash, 0)
 	for _, kvpair := range kvpairs {
-		fileHashs = append(fileHashs, FileHash{Path: kvpair.Key, Hash: string(kvpair.Value)})
+		relPath, err := filepath.Rel(prefix, kvpair.Key)
+		if err != nil {
+			return nil, fmt.Errorf("Invalid path '%s': %s", kvpair.Key, err)
+		}
+
+		fileHashs = append(fileHashs, FileHash{Path: relPath, Hash: string(kvpair.Value)})
 	}
 
 	return fileHashs, nil
