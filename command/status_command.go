@@ -10,12 +10,12 @@ import (
 var StatusFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "addr",
-		Value: "127.0.0.1:8500",
+		Value: "localhost:8500",
 		Usage: "consul HTTP API address with port",
 	},
 	cli.StringFlag{
 		Name:  "dc",
-		Value: "",
+		Value: "dc1",
 		Usage: "consul datacenter, uses local if blank",
 	},
 	cli.StringFlag{
@@ -44,8 +44,24 @@ func StatusCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	err = client.GetFileStatus(prefix, baseDir)
+	localFhs, err := LocalFileHashs(baseDir)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	remoteFhs, err := RemoteFileHashs(client, prefix)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	addFhs, delFhs, modFhs := DiffFileHashs(localFhs, remoteFhs)
+	for _, fh := range addFhs {
+		println(`A ` + fh.Path)
+	}
+	for _, fh := range delFhs {
+		println(`D ` + fh.Path)
+	}
+	for _, fh := range modFhs {
+		println(`M ` + fh.Path)
 	}
 }

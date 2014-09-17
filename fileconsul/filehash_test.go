@@ -28,30 +28,47 @@ func TestRemoteFileHashs(t *testing.T) {
 
 func TestDiffFileHashs(t *testing.T) {
 	fhsA := []FileHash{
-		FileHash{Path: "/path/to/sample1", Hash: "123"},
-		FileHash{Path: "/path/to/sample2", Hash: "123"}}
+		FileHash{Path: "/path/to/sample1", Hash: "12"},
+		FileHash{Path: "/path/to/sample2", Hash: "12"},
+		FileHash{Path: "/path/to/sample4", Hash: "78"}}
 
 	fhsB := []FileHash{
-		FileHash{Path: "/path/to/sample1", Hash: "123"},
-		FileHash{Path: "/path/to/sample2", Hash: "456"},
-		FileHash{Path: "/path/to/sample3", Hash: "789"}}
+		FileHash{Path: "/path/to/sample1", Hash: "12"},
+		FileHash{Path: "/path/to/sample2", Hash: "34"},
+		FileHash{Path: "/path/to/sample3", Hash: "56"}}
 
-	ansDiffFhs := []FileHash{
-		FileHash{Path: "/path/to/sample2", Hash: "456"},
-		FileHash{Path: "/path/to/sample3", Hash: "789"}}
+	resAddFhs, resDelFhs, resModFhs := DiffFileHashs(fhsA, fhsB)
 
-	resDiffFhs, err := DiffFileHashs(fhsA, fhsB)
-	if err != nil {
-		t.Fatalf("err: %v", err)
+	ansAddFhs := []FileHash{
+		FileHash{Path: "/path/to/sample4", Hash: "78"}}
+	if len(ansAddFhs) != len(resAddFhs) {
+		t.Fatalf("expected result is %s, but %s", ansAddFhs, resAddFhs)
+	}
+	for i := 0; i < len(ansAddFhs); i++ {
+		if !ansAddFhs[i].Equal(resAddFhs[i]) {
+			t.Fatalf("expected result is %s, but %s", ansAddFhs, resAddFhs)
+		}
 	}
 
-	if len(ansDiffFhs) != len(ansDiffFhs) {
-		t.Fatalf("expected result is %s, but %s", ansDiffFhs, resDiffFhs)
+	ansDelFhs := []FileHash{
+		FileHash{Path: "/path/to/sample3", Hash: "56"}}
+	if len(ansDelFhs) != len(resDelFhs) {
+		t.Fatalf("expected result is %s, but %s", ansDelFhs, resDelFhs)
+	}
+	for i := 0; i < len(ansDelFhs); i++ {
+		if !ansDelFhs[i].Equal(resDelFhs[i]) {
+			t.Fatalf("expected result is %s, but %s", ansDelFhs, resDelFhs)
+		}
 	}
 
-	for i := 0; i < len(ansDiffFhs); i++ {
-		if !ansDiffFhs[i].Compare(resDiffFhs[i]) {
-			t.Fatalf("expected result is %s, but %s", ansDiffFhs, resDiffFhs)
+	ansModFhs := []FileHash{
+		FileHash{Path: "/path/to/sample2", Hash: "12"}}
+	if len(ansModFhs) != len(resModFhs) {
+		t.Fatalf("expected result is %s, but %s", ansModFhs, resModFhs)
+	}
+	for i := 0; i < len(ansModFhs); i++ {
+		if !ansModFhs[i].Equal(resModFhs[i]) {
+			t.Fatalf("expected result is %s, but %s", ansModFhs, resModFhs)
 		}
 	}
 }

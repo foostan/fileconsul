@@ -12,7 +12,7 @@ type FileHash struct {
 	Hash string
 }
 
-func (fhA *FileHash) Compare(fhB FileHash) bool {
+func (fhA *FileHash) Equal(fhB FileHash) bool {
 	if fhA.Path == fhB.Path && fhA.Hash == fhB.Hash {
 		return true
 	}
@@ -21,23 +21,51 @@ func (fhA *FileHash) Compare(fhB FileHash) bool {
 
 func (fhA *FileHash) In(fhsB []FileHash) bool {
 	for _, fhB := range fhsB {
-		if fhA.Compare(fhB) {
+		if fhA.Equal(fhB) {
 			return true
 		}
 	}
 	return false
 }
 
-func DiffFileHashs(fhsA []FileHash, fhsB []FileHash) ([]FileHash, error) {
-	diffFhs := make([]FileHash, 0)
+func (fhA *FileHash) Modified(fhB FileHash) bool {
+	if fhA.Path == fhB.Path && fhA.Hash != fhB.Hash {
+		return true
+	}
+	return false
+}
 
+func (fhA *FileHash) InMod(fhsB []FileHash) bool {
 	for _, fhB := range fhsB {
-		if !fhB.In(fhsA) {
-			diffFhs = append(diffFhs, fhB)
+		if fhA.Modified(fhB) {
+			return true
+		}
+	}
+	return false
+}
+
+func DiffFileHashs(fhsA []FileHash, fhsB []FileHash) ([]FileHash, []FileHash, []FileHash) {
+	addFhs := make([]FileHash, 0)
+	delFhs := make([]FileHash, 0)
+	modFhs := make([]FileHash, 0)
+
+	for _, fhA := range fhsA {
+		if !fhA.In(fhsB) {
+			if fhA.InMod(fhsB) {
+				modFhs = append(modFhs, fhA)
+			} else {
+				addFhs = append(addFhs, fhA)
+			}
 		}
 	}
 
-	return diffFhs, nil
+	for _, fhB := range fhsB {
+		if !fhB.In(fhsA) && !fhB.InMod(fhsA) {
+			delFhs = append(delFhs, fhB)
+		}
+	}
+
+	return addFhs, delFhs, modFhs
 }
 
 func LocalFileHashs(basepath string) ([]FileHash, error) {
@@ -46,7 +74,7 @@ func LocalFileHashs(basepath string) ([]FileHash, error) {
 	searchPaths := []string{basepath}
 
 	for len(searchPaths) > 0 {
-		path := searchPaths[len(searchPaths)-1]
+		path := searchPaths[len(searchPaths) - 1]
 		searchPaths = searchPaths[:len(searchPaths)-1]
 
 		f, err := os.Open(path)
