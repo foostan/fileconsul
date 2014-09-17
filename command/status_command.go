@@ -55,18 +55,13 @@ func StatusCommand(c *cli.Context) {
 	}
 
 	addFhs, delFhs, modFhs := DiffFileHashs(localFhs, remoteFhs)
-	println("only local:")
 	for _, fh := range addFhs {
-		println("\t" + fh.Path)
+		println("new file:\t" + fh.Path)
 	}
-
-	println("only remote:")
 	for _, fh := range delFhs {
-		println("\t" + fh.Path)
+		println("deleted:\t" + fh.Path)
 	}
-
-	println("modified:")
 	for _, fh := range modFhs {
-		println("\t" + fh.Path)
+		println("modified:\t" + fh.Path)
 	}
 }
