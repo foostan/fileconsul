@@ -40,7 +40,7 @@ func (c *Client) GetKVByKeyprefix(prefix string) (consulapi.KVPairs, error) {
 	return pairs, nil
 }
 
-func (c *Client) PushKVByKeyprefix(prefix string, value string) error {
+func (c *Client) PutKVByKeyprefix(prefix string, value string) error {
 	p := &consulapi.KVPair{Key: prefix, Value: []byte(value)}
 	_, err := c.ConsulClient.KV().Put(p, nil)
 	if err != nil {

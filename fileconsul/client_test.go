@@ -14,7 +14,7 @@ func TestConstructClient(t *testing.T) {
 	}
 }
 
-func TestPushKVByKeyprefix(t *testing.T) {
+func TestPutKVByKeyprefix(t *testing.T) {
 	client, err := NewClient(&ClientConfig{
 		ConsulAddr: "localhost:8500",
 		ConsulDC:   "dc1",
@@ -23,7 +23,7 @@ func TestPushKVByKeyprefix(t *testing.T) {
 		t.Skipf("err: %v", err)
 	}
 
-	err = client.PushKVByKeyprefix("foo/bar/bazz", "123")
+	err = client.PutKVByKeyprefix("foo/bar/bazz", "123")
 	if err != nil {
 		t.Skipf("err: %v", err)
 	}
