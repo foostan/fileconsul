@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-func TestFileHashs(t *testing.T) {
-	_, err := FileHashs([]string{"../test/sample"})
+func TestLocalFileHashs(t *testing.T) {
+	_, err := LocalFileHashs([]string{"../test/sample"})
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
