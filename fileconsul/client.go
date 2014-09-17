@@ -31,7 +31,7 @@ func NewClient(config *ClientConfig) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) GetKVByKeyprefix(prefix string) (consulapi.KVPairs, error) {
+func (c *Client) GetKV(prefix string) (consulapi.KVPairs, error) {
 	pairs, _, err := c.ConsulClient.KV().List(prefix, nil)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (c *Client) GetKVByKeyprefix(prefix string) (consulapi.KVPairs, error) {
 	return pairs, nil
 }
 
-func (c *Client) PutKVByKeyprefix(prefix string, value string) error {
+func (c *Client) PutKV(prefix string, value string) error {
 	p := &consulapi.KVPair{Key: prefix, Value: []byte(value)}
 	_, err := c.ConsulClient.KV().Put(p, nil)
 	if err != nil {
@@ -50,7 +50,7 @@ func (c *Client) PutKVByKeyprefix(prefix string, value string) error {
 	return nil
 }
 
-func (c *Client) DeleteKVByKeyprefix(prefix string) error {
+func (c *Client) DeleteKV(prefix string) error {
 	_, err := c.ConsulClient.KV().DeleteTree(prefix, nil)
 	if err != nil {
 		return err

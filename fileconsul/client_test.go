@@ -14,7 +14,7 @@ func TestConstructClient(t *testing.T) {
 	}
 }
 
-func TestPutKVByKeyprefix(t *testing.T) {
+func TestPutGetDeleteKV(t *testing.T) {
 	client, err := NewClient(&ClientConfig{
 		ConsulAddr: "localhost:8500",
 		ConsulDC:   "dc1",
@@ -23,22 +23,17 @@ func TestPutKVByKeyprefix(t *testing.T) {
 		t.Skipf("err: %v", err)
 	}
 
-	err = client.PutKVByKeyprefix("foo/bar/bazz", "123")
-	if err != nil {
-		t.Skipf("err: %v", err)
-	}
-}
-
-func TestDeleteKVByKeyprefix(t *testing.T) {
-	client, err := NewClient(&ClientConfig{
-	ConsulAddr: "localhost:8500",
-	ConsulDC:   "dc1",
-})
+	err = client.PutKV("foo/bar/bazz", "123")
 	if err != nil {
 		t.Skipf("err: %v", err)
 	}
 
-	err = client.DeleteKVByKeyprefix("foo/bar/bazz")
+	_, err = client.GetKV("foo/bar/bazz")
+	if err != nil {
+		t.Skipf("err: %v", err)
+	}
+
+	err = client.DeleteKV("foo/bar/bazz")
 	if err != nil {
 		t.Skipf("err: %v", err)
 	}

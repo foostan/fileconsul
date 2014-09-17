@@ -122,7 +122,7 @@ func LocalFileHashs(basepath string) ([]FileHash, error) {
 }
 
 func RemoteFileHashs(client *Client, prefix string) ([]FileHash, error) {
-	kvpairs, err := client.GetKVByKeyprefix(prefix)
+	kvpairs, err := client.GetKV(prefix)
 	if err != nil {
 		return nil, err
 	}
