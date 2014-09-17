@@ -49,3 +49,12 @@ func (c *Client) PutKVByKeyprefix(prefix string, value string) error {
 
 	return nil
 }
+
+func (c *Client) DeleteKVByKeyprefix(prefix string) error {
+	_, err := c.ConsulClient.KV().DeleteTree(prefix, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
