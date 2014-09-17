@@ -58,3 +58,31 @@ func FileHashs(paths []string) ([]FileHash, error) {
 
 	return fileHashs, nil
 }
+
+func DiffFileHashs(fhsA []FileHash, fhsB []FileHash) ([]FileHash,error) {
+	diffFhs := make([]FileHash, 0)
+
+	for _, fhB := range fhsB {
+		if !fhB.In(fhsA) {
+			diffFhs = append(diffFhs, fhB)
+		}
+	}
+
+	return diffFhs, nil
+}
+
+func (fhA *FileHash) Compare(fhB FileHash) bool {
+	if fhA.Path == fhB.Path && fhA.Hash == fhB.Hash {
+		return true
+	}
+	return false
+}
+
+func (fhA *FileHash) In(fhsB []FileHash) bool {
+	for _, fhB := range fhsB {
+		if fhA.Compare(fhB) {
+			return true
+		}
+	}
+	return false
+}
