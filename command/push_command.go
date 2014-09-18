@@ -58,21 +58,36 @@ func PushCommand(c *cli.Context) {
 	addFhs, delFhs, modFhs := DiffFileHashs(localFhs, remoteFhs)
 	for _, fh := range addFhs {
 		println("push new file:\t" + fh.Path)
-		err = client.PutKV(filepath.Join(prefix, fh.Path), fh.Hash)
+		err = client.PutKV(filepath.Join(prefix, "hash", fh.Path), fh.Hash)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = client.PutKV(filepath.Join(prefix, "host", fh.Path), fh.Host)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 	for _, fh := range delFhs {
 		println("delete file:\t" + fh.Path)
-		err = client.DeleteKV(filepath.Join(prefix, fh.Path))
+		err = client.DeleteKV(filepath.Join(prefix, "hash", fh.Path))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = client.DeleteKV(filepath.Join(prefix, "host", fh.Host))
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 	for _, fh := range modFhs {
 		println("modify file:\t" + fh.Path)
-		err = client.PutKV(filepath.Join(prefix, fh.Path), fh.Hash)
+		err = client.PutKV(filepath.Join(prefix, "hash", fh.Path), fh.Hash)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = client.PutKV(filepath.Join(prefix, "host", fh.Path), fh.Host)
 		if err != nil {
 			log.Fatal(err)
 		}

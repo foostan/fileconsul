@@ -10,6 +10,7 @@ import (
 type FileHash struct {
 	Path string
 	Hash string
+	Host string
 }
 
 func (fhA *FileHash) Equal(fhB FileHash) bool {
@@ -112,7 +113,7 @@ func LocalFileHashs(basepath string) ([]FileHash, error) {
 
 			hash := fmt.Sprintf("%x", md5.Sum(data))
 
-			fileHashs = append(fileHashs, FileHash{Path: relPath, Hash: hash})
+			fileHashs = append(fileHashs, FileHash{Path: relPath, Hash: hash, Host: "localhost"})
 		}
 
 		f.Close()
@@ -122,19 +123,25 @@ func LocalFileHashs(basepath string) ([]FileHash, error) {
 }
 
 func RemoteFileHashs(client *Client, prefix string) ([]FileHash, error) {
-	kvpairs, err := client.GetKV(prefix)
+	hashprefix := filepath.Join(prefix, "hash")
+	hashkvpairs, err := client.ListKV(hashprefix)
 	if err != nil {
 		return nil, err
 	}
 
 	fileHashs := make([]FileHash, 0)
-	for _, kvpair := range kvpairs {
-		relPath, err := filepath.Rel(prefix, kvpair.Key)
+	for _, hashkvpair := range hashkvpairs {
+		relPath, err := filepath.Rel(hashprefix, hashkvpair.Key)
 		if err != nil {
-			return nil, fmt.Errorf("Invalid path '%s': %s", kvpair.Key, err)
+			return nil, fmt.Errorf("Invalid path '%s': %s", hashkvpair.Key, err)
 		}
 
-		fileHashs = append(fileHashs, FileHash{Path: relPath, Hash: string(kvpair.Value)})
+		hostkvpair, err := client.GetKV(filepath.Join(prefix, "host", relPath))
+		if err != nil {
+			return nil, err
+		}
+
+		fileHashs = append(fileHashs, FileHash{Path: relPath, Hash: string(hashkvpair.Value), Host: string(hostkvpair.Value)})
 	}
 
 	return fileHashs, nil

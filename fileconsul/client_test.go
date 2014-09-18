@@ -33,6 +33,11 @@ func TestPutGetDeleteKV(t *testing.T) {
 		t.Skipf("err: %v", err)
 	}
 
+	_, err = client.ListKV("foo")
+	if err != nil {
+		t.Skipf("err: %v", err)
+	}
+
 	err = client.DeleteKV("foo/bar/bazz")
 	if err != nil {
 		t.Skipf("err: %v", err)

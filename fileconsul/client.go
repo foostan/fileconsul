@@ -31,7 +31,16 @@ func NewClient(config *ClientConfig) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) GetKV(prefix string) (consulapi.KVPairs, error) {
+func (c *Client) GetKV(key string) (*consulapi.KVPair, error) {
+	pair, _, err := c.ConsulClient.KV().Get(key, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return pair, nil
+}
+
+func (c *Client) ListKV(prefix string) (consulapi.KVPairs, error) {
 	pairs, _, err := c.ConsulClient.KV().List(prefix, nil)
 	if err != nil {
 		return nil, err
