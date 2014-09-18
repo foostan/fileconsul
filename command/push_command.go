@@ -36,6 +36,10 @@ func PushCommand(c *cli.Context) {
 	dc := c.String("dc")
 	prefix := c.String("prefix")
 	baseDir := c.String("base-dir")
+	absBaseDir, err := filepath.Abs(baseDir)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	client, err := NewClient(&ClientConfig{
 		ConsulAddr: addr,
@@ -63,7 +67,7 @@ func PushCommand(c *cli.Context) {
 			log.Fatal(err)
 		}
 
-		err = client.PutKV(filepath.Join(prefix, "host", fh.Path), fh.Host)
+		err = client.PutKV(filepath.Join(prefix, "host", fh.Path), fh.Host + ":" + absBaseDir)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -75,7 +79,7 @@ func PushCommand(c *cli.Context) {
 			log.Fatal(err)
 		}
 
-		err = client.DeleteKV(filepath.Join(prefix, "host", fh.Host))
+		err = client.DeleteKV(filepath.Join(prefix, "host", fh.Path))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -87,7 +91,7 @@ func PushCommand(c *cli.Context) {
 			log.Fatal(err)
 		}
 
-		err = client.PutKV(filepath.Join(prefix, "host", fh.Path), fh.Host)
+		err = client.PutKV(filepath.Join(prefix, "host", fh.Path), fh.Host + ":" + absBaseDir)
 		if err != nil {
 			log.Fatal(err)
 		}
