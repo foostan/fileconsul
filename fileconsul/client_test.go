@@ -45,10 +45,15 @@ func TestPutGetDeleteKV(t *testing.T) {
 }
 
 func TestConsulAgentInfo(t *testing.T) {
-	_, err := NewClient(&ClientConfig{
+	client, err := NewClient(&ClientConfig{
 		ConsulAddr: "localhost:8500",
 		ConsulDC:   "dc1",
 	})
+	if err != nil {
+		t.Skipf("err: %v", err)
+	}
+
+	_, err = client.ConsulAgentInfo()
 	if err != nil {
 		t.Skipf("err: %v", err)
 	}

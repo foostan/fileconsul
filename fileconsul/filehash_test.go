@@ -5,7 +5,14 @@ import (
 )
 
 func TestLocalFileHashs(t *testing.T) {
-	_, err := LocalFileHashs("../test/sample")
+	client, err := NewClient(&ClientConfig{
+		ConsulAddr: "localhost:8500",
+		ConsulDC:   "dc1",
+	})
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	_, err = client.LocalFileHashs("../test/sample")
 	if err != nil {
 		t.Skipf("err: %v", err)
 	}
@@ -20,7 +27,7 @@ func TestRemoteFileHashs(t *testing.T) {
 		t.Fatalf("err: %v", err)
 	}
 
-	_, err = RemoteFileHashs(client, "fileconsul")
+	_, err = client.RemoteFileHashs("fileconsul")
 	if err != nil {
 		t.Skipf("err: %v", err)
 	}
@@ -72,5 +79,3 @@ func TestDiffFileHashs(t *testing.T) {
 		}
 	}
 }
-
-

@@ -45,12 +45,12 @@ func PushCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	localFhs, err := LocalFileHashs(baseDir)
+	localFhs, err := client.LocalFileHashs(baseDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	remoteFhs, err := RemoteFileHashs(client, prefix)
+	remoteFhs, err := client.RemoteFileHashs(prefix)
 	if err != nil {
 		log.Fatal(err)
 	}

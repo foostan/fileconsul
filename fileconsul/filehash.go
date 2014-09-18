@@ -69,13 +69,13 @@ func DiffFileHashs(fhsA []FileHash, fhsB []FileHash) ([]FileHash, []FileHash, []
 	return addFhs, delFhs, modFhs
 }
 
-func LocalFileHashs(basepath string) ([]FileHash, error) {
+func (client *Client) LocalFileHashs(basepath string) ([]FileHash, error) {
 
 	fileHashs := make([]FileHash, 0)
 	searchPaths := []string{basepath}
 
 	for len(searchPaths) > 0 {
-		path := searchPaths[len(searchPaths) - 1]
+		path := searchPaths[len(searchPaths)-1]
 		searchPaths = searchPaths[:len(searchPaths)-1]
 
 		f, err := os.Open(path)
@@ -113,7 +113,12 @@ func LocalFileHashs(basepath string) ([]FileHash, error) {
 
 			hash := fmt.Sprintf("%x", md5.Sum(data))
 
-			fileHashs = append(fileHashs, FileHash{Path: relPath, Hash: hash, Host: "localhost"})
+			consulAgentInfo, err := client.ConsulAgentInfo()
+			if err != nil {
+				return nil, err
+			}
+
+			fileHashs = append(fileHashs, FileHash{Path: relPath, Hash: hash, Host: consulAgentInfo.Addr})
 		}
 
 		f.Close()
@@ -122,7 +127,7 @@ func LocalFileHashs(basepath string) ([]FileHash, error) {
 	return fileHashs, nil
 }
 
-func RemoteFileHashs(client *Client, prefix string) ([]FileHash, error) {
+func (client *Client) RemoteFileHashs(prefix string) ([]FileHash, error) {
 	hashprefix := filepath.Join(prefix, "hash")
 	hashkvpairs, err := client.ListKV(hashprefix)
 	if err != nil {
