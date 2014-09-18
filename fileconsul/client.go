@@ -11,9 +11,16 @@ type Client struct {
 }
 
 type ClientConfig struct {
-	ConsulAddr     string
-	ConsulDC       string
-	Timeout        time.Duration
+	ConsulAddr string
+	ConsulDC   string
+	Timeout    time.Duration
+}
+
+type ConsulAgentInfo struct {
+	Name   string
+	Port   float64
+	Addr   string
+	Status float64
 }
 
 func NewClient(config *ClientConfig) (*Client, error) {
@@ -66,4 +73,18 @@ func (c *Client) DeleteKV(prefix string) error {
 	}
 
 	return nil
+}
+
+func (c *Client) ConsulAgentInfo() (*ConsulAgentInfo, error) {
+	info, err := c.ConsulClient.Agent().Self()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ConsulAgentInfo{
+		Name:   info["Member"]["Name"].(string),
+		Port:   info["Member"]["Port"].(float64),
+		Addr:   info["Member"]["Addr"].(string),
+		Status: info["Member"]["Status"].(float64),
+	}, nil
 }
