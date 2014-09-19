@@ -28,4 +28,11 @@ var Commands = []cli.Command{
 		Flags:       command.PushFlags,
 		Action:      command.PushCommand,
 	},
+	cli.Command{
+		Name:        "register",
+		Usage:       "",
+		Description: "Register file info to a consul cluster",
+		Flags:       command.RegisterFlags,
+		Action:      command.RegisterCommand,
+	},
 }
