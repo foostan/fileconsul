@@ -1,0 +1,8 @@
+{
+    "check": {
+            "id": "loadavg",
+            "name": "Check load average",
+            "script": "/bin/loadavg",
+            "interval": "10s"
+    }
+}

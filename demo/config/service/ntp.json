@@ -1,0 +1,10 @@
+{
+    "service": {
+        "name": "ntp",
+        "tags": [],
+        "check": {
+            "script": "/bin/ntp",
+            "interval": "10s"
+        }
+    }
+}
