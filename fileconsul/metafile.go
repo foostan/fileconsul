@@ -20,6 +20,7 @@ type MFDiff struct {
 	Del MFList
 	New MFList
 	Old MFList
+	Eq  MFList
 }
 
 type MFValue struct {
@@ -66,13 +67,14 @@ func (mfListA *MFList) Diff(mfListB MFList) *MFDiff {
 	del := make([]Metafile, 0)
 	new := make([]Metafile, 0)
 	old := make([]Metafile, 0)
+	eq := make([]Metafile, 0)
 
 	for _, b := range mfListB {
 		ok, a := mfListA.Include(b)
 		if ok {
 			switch {
 			case a.EqVer(b):
-				// skip
+				eq = append(eq, a)
 			case a.NeVer(b):
 				new = append(new, a)
 			}
@@ -100,6 +102,7 @@ func (mfListA *MFList) Diff(mfListB MFList) *MFDiff {
 		Del: del,
 		New: new,
 		Old: old,
+		Eq:  eq,
 	}
 }
 

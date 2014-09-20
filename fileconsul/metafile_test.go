@@ -66,6 +66,17 @@ func TestDiff(t *testing.T) {
 			t.Fatalf("expected result is %s, but %s", oldMfDiff[i], mfDiff.Old[i])
 		}
 	}
+
+	eqMfDiff := MFList{
+		Metafile{Path: "/path/to/sample1", Url: "http://path/to/sample1", Hash: "12"}}
+	if len(mfDiff.Eq) != len(eqMfDiff) {
+		t.Fatalf("expected result is %s, but %s", eqMfDiff, mfDiff.Eq)
+	}
+	for i := 0; i < len(eqMfDiff); i++ {
+		if !eqMfDiff[i].EqVer(mfDiff.Eq[i]) {
+			t.Fatalf("expected result is %s, but %s", eqMfDiff[i], mfDiff.Eq[i])
+		}
+	}
 }
 
 func TestReadMFList(t *testing.T) {

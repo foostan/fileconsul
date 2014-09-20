@@ -69,17 +69,17 @@ func ReadLFList(basepath string) (LFList, error) {
 	return lfList, nil
 }
 
-func (localfile *Localfile) toMetafile() Metafile {
+func (localfile *Localfile) ToMetafile() Metafile {
 	return Metafile{
 		Path: localfile.Path,
 		Hash: localfile.Hash,
 	}
 }
 
-func (lfList *LFList) toMFList() MFList {
+func (lfList *LFList) ToMFList() MFList {
 	mfList := make([]Metafile, 0)
 	for _, localfile := range *lfList {
-		mfList = append(mfList, localfile.toMetafile())
+		mfList = append(mfList, localfile.ToMetafile())
 	}
 	return mfList
 }

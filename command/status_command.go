@@ -24,9 +24,9 @@ var StatusFlags = []cli.Flag{
 		Usage: "reading file status from Consul's K/V store with the given prefix",
 	},
 	cli.StringFlag{
-		Name:  "base-dir",
+		Name:  "basepath",
 		Value: ".",
-		Usage: "base directory of target files",
+		Usage: "base directory path of target files",
 	},
 }
 
@@ -34,7 +34,7 @@ func StatusCommand(c *cli.Context) {
 	addr := c.String("addr")
 	dc := c.String("dc")
 	prefix := c.String("prefix")
-	baseDir := c.String("base-dir")
+	basepath := c.String("basepath")
 
 	client, err := NewClient(&ClientConfig{
 		ConsulAddr: addr,
@@ -44,24 +44,31 @@ func StatusCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	localFhs, err := client.LocalFileHashs(baseDir)
+	lfList, err := ReadLFList(basepath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	remoteFhs, err := client.RemoteFileHashs(prefix)
+	mfList, err := client.ReadMFList(prefix)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	addFhs, delFhs, modFhs := DiffFileHashs(localFhs, remoteFhs)
-	for _, fh := range addFhs {
-		println("new file:\t" + fh.Path)
+	mfDiff := mfList.Diff(lfList.ToMFList())
+
+	for _, metafile := range mfDiff.Eq {
+		println("remote/local:\t" + metafile.Path)
 	}
-	for _, fh := range delFhs {
-		println("deleted:\t" + fh.Path)
+
+	for _, metafile := range mfDiff.Add {
+		println("remote:\t" + metafile.Path)
 	}
-	for _, fh := range modFhs {
-		println("modified:\t" + fh.Path)
+
+	for _, metafile := range mfDiff.Del {
+		println("local:\t" + metafile.Path)
+	}
+
+	for _, metafile := range mfDiff.New {
+		println("remote/local:(modified)\t" + metafile.Path)
 	}
 }

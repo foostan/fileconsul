@@ -22,7 +22,7 @@ func TestToMFList(t *testing.T) {
 		Metafile{Path: "/path/to/sample2", Url: "", Hash: "34"},
 	}
 
-	mfList := lfList.toMFList()
+	mfList := lfList.ToMFList()
 
 	if !mfList.Equal(ansMFList) {
 		t.Fatalf("expected result is %s, but %s", ansMFList, mfList)
