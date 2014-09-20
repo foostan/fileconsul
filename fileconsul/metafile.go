@@ -1,9 +1,16 @@
 package fileconsul
 
+import (
+	"fmt"
+	"path/filepath"
+	"strings"
+)
+
 type Metafile struct {
-	Path string
-	Url  string
-	Hash string
+	Prefix string
+	Path   string
+	Url    string
+	Hash   string
 }
 
 type MFList []Metafile
@@ -15,8 +22,14 @@ type MFDiff struct {
 	Old MFList
 }
 
+type MFValue struct {
+	Url  string
+	Hash string
+}
+
 func (a *Metafile) EqFile(b Metafile) bool {
-	if a.Path == b.Path && (a.Url == "" || b.Url == "" || a.Url == b.Url) {
+	if a.Path == b.Path &&
+		(a.Url == "" || b.Url == "" || a.Url == b.Url) {
 		return true
 	}
 
@@ -100,4 +113,33 @@ func (mfListA *MFList) Equal(mfListB MFList) bool {
 	}
 
 	return false
+}
+
+func (client *Client) ReadMFList(prefix string) (MFList, error) {
+	kvpairs, err := client.ListKV(prefix)
+	if err != nil {
+		return nil, err
+	}
+
+	mfList := make([]Metafile, 0)
+	for _, kvpair := range kvpairs {
+		relPath, err := filepath.Rel(prefix, kvpair.Key)
+		if err != nil {
+			return nil, fmt.Errorf("Invalid path '%s': %s", kvpair.Key, err)
+		}
+
+		mfValue := ParseMFValue(string(kvpair.Value))
+
+		mfList = append(mfList, Metafile{Prefix: prefix, Path: relPath, Url: mfValue.Url, Hash: mfValue.Hash})
+	}
+
+	return mfList, nil
+}
+
+func ParseMFValue(value string) MFValue {
+	sValues := strings.Split(value, ",")
+	return MFValue {
+		Url: sValues[0],
+		Hash: sValues[1],
+	}
 }

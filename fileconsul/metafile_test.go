@@ -1,6 +1,7 @@
 package fileconsul
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -65,5 +66,36 @@ func TestDiff(t *testing.T) {
 		if !oldMfDiff[i].EqVer(mfDiff.Old[i]) {
 			t.Fatalf("expected result is %s, but %s", oldMfDiff[i], mfDiff.Old[i])
 		}
+	}
+}
+
+func TestReadMFList(t *testing.T) {
+	client, err := NewClient(&ClientConfig{
+		ConsulAddr: "localhost:8500",
+		ConsulDC:   "dc1",
+	})
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	_, err := client.ReadMFList("fileconsul")
+	if err != nil {
+		t.Skipf("err: %v", err)
+	}
+}
+
+func TestParseMFValue(t *testing.T) {
+	url := "http://path/to/sample1"
+	hash := "12"
+	value := strings.Join([]string{url, hash}, ",")
+
+	mfValue := ParseMFValue(value)
+
+	if mfValue.Url != url {
+		t.Fatalf("expected result is %s, but %s", url, mfValue.Url)
+	}
+
+	if mfValue.Hash != hash {
+		t.Fatalf("expected result is %s, but %s", hash, mfValue.Hash)
 	}
 }

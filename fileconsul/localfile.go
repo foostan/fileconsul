@@ -70,7 +70,6 @@ func ReadLFList(basepath string) (LFList, error) {
 func (localfile *Localfile) toMetafile() Metafile {
 	return Metafile{
 		Path: localfile.Path,
-		Url:  "",
 		Hash: localfile.Hash,
 	}
 }
