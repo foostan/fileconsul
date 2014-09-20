@@ -78,18 +78,18 @@ func TestReadMFList(t *testing.T) {
 		t.Fatalf("err: %v", err)
 	}
 
-	_, err := client.ReadMFList("fileconsul")
+	_, err = client.ReadMFList("fileconsul")
 	if err != nil {
 		t.Skipf("err: %v", err)
 	}
 }
 
-func TestParseMFValue(t *testing.T) {
+func TestStrToMFValue(t *testing.T) {
 	url := "http://path/to/sample1"
 	hash := "12"
 	value := strings.Join([]string{url, hash}, ",")
 
-	mfValue := ParseMFValue(value)
+	mfValue := StrToMFValue(value)
 
 	if mfValue.Url != url {
 		t.Fatalf("expected result is %s, but %s", url, mfValue.Url)

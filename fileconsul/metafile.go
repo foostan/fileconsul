@@ -128,7 +128,7 @@ func (client *Client) ReadMFList(prefix string) (MFList, error) {
 			return nil, fmt.Errorf("Invalid path '%s': %s", kvpair.Key, err)
 		}
 
-		mfValue := ParseMFValue(string(kvpair.Value))
+		mfValue := StrToMFValue(string(kvpair.Value))
 
 		mfList = append(mfList, Metafile{Prefix: prefix, Path: relPath, Url: mfValue.Url, Hash: mfValue.Hash})
 	}
@@ -136,7 +136,7 @@ func (client *Client) ReadMFList(prefix string) (MFList, error) {
 	return mfList, nil
 }
 
-func ParseMFValue(value string) MFValue {
+func StrToMFValue(value string) MFValue {
 	sValues := strings.Split(value, ",")
 	return MFValue {
 		Url: sValues[0],
