@@ -136,10 +136,14 @@ func (client *Client) ReadMFList(prefix string) (MFList, error) {
 	return mfList, nil
 }
 
-func StrToMFValue(value string) MFValue {
-	sValues := strings.Split(value, ",")
-	return MFValue {
-		Url: sValues[0],
-		Hash: sValues[1],
+func StrToMFValue(str string) MFValue {
+	splited := strings.Split(str, ",")
+	return MFValue{
+		Url:  splited[0],
+		Hash: splited[1],
 	}
+}
+
+func (mfValue *MFValue) ToStr() string {
+	return strings.Join([]string{mfValue.Url, mfValue.Hash}, ",")
 }

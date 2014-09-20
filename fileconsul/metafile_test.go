@@ -1,7 +1,6 @@
 package fileconsul
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -85,17 +84,11 @@ func TestReadMFList(t *testing.T) {
 }
 
 func TestStrToMFValue(t *testing.T) {
-	url := "http://path/to/sample1"
-	hash := "12"
-	value := strings.Join([]string{url, hash}, ",")
+	str := "http://path/to/sample1,12"
+	mfValue := StrToMFValue(str)
+	res := mfValue.ToStr()
 
-	mfValue := StrToMFValue(value)
-
-	if mfValue.Url != url {
-		t.Fatalf("expected result is %s, but %s", url, mfValue.Url)
-	}
-
-	if mfValue.Hash != hash {
-		t.Fatalf("expected result is %s, but %s", hash, mfValue.Hash)
+	if str != res {
+		t.Fatalf("expected result is %s, but %s", str, res)
 	}
 }
