@@ -22,13 +22,6 @@ var Commands = []cli.Command{
 		Action:      command.PullCommand,
 	},
 	cli.Command{
-		Name:        "push",
-		Usage:       "",
-		Description: "Push files to a consul cluster",
-		Flags:       command.PushFlags,
-		Action:      command.PushCommand,
-	},
-	cli.Command{
 		Name:        "register",
 		Usage:       "",
 		Description: "Register file info to a consul cluster",
