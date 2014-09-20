@@ -28,3 +28,10 @@ func TestToMFList(t *testing.T) {
 		t.Fatalf("expected result is %s, but %s", ansMFList, mfList)
 	}
 }
+
+func TestUrlToHash(t *testing.T) {
+	_, err := UrlToHash("https://raw.githubusercontent.com/foostan/fileconsul/master/demo/config/service/apache2.json")
+	if err != nil {
+		t.Skipf("err: %v", err)
+	}
+}

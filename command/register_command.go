@@ -49,7 +49,14 @@ func RegisterCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	err = client.PutKV(filepath.Join(prefix, path), url)
+	hash, err:= UrlToHash(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mfValue := MFValue{Url: url, Hash: hash}
+
+	err = client.PutKV(filepath.Join(prefix, path), mfValue.ToStr())
 	if err != nil {
 		log.Fatal(err)
 	}

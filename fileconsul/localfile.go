@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"net/http"
+	"bytes"
 )
 
 type Localfile struct {
@@ -80,4 +82,17 @@ func (lfList *LFList) toMFList() MFList {
 		mfList = append(mfList, localfile.toMetafile())
 	}
 	return mfList
+}
+
+func UrlToHash(url string) (string, error) {
+	response, err := http.Get(url)
+	if err != nil {
+		return "", fmt.Errorf("Error while downloading '%s' : %s", url, err)
+	}
+	defer response.Body.Close()
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(response.Body)
+
+	return fmt.Sprintf("%x", md5.Sum(buf.Bytes())), nil
 }
