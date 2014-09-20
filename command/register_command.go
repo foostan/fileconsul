@@ -39,7 +39,13 @@ func RegisterCommand(c *cli.Context) {
 	dc := c.String("dc")
 	prefix := c.String("prefix")
 	path := c.String("path")
+	if path == "" {
+		log.Fatalf("Error missing flag 'path'")
+	}
 	url := c.String("url")
+	if url == "" {
+		log.Fatalf("Error missing flag 'url'")
+	}
 
 	client, err := NewClient(&ClientConfig{
 		ConsulAddr: addr,
