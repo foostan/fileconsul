@@ -16,7 +16,7 @@ type MFDiff struct {
 }
 
 func (a *Metafile) EqFile(b Metafile) bool {
-	if a.Path == b.Path && a.Url == b.Url {
+	if a.Path == b.Path && (a.Url == "" || b.Url == "" || a.Url == b.Url) {
 		return true
 	}
 
@@ -39,8 +39,8 @@ func (a *Metafile) NeVer(b Metafile) bool {
 	return false
 }
 
-func (aList *MFList) Include(b Metafile) (bool, Metafile) {
-	for _, a := range *aList {
+func (mfListA *MFList) Include(b Metafile) (bool, Metafile) {
+	for _, a := range *mfListA {
 		if a.EqFile(b) {
 			return true, a
 		}
@@ -48,16 +48,16 @@ func (aList *MFList) Include(b Metafile) (bool, Metafile) {
 	return false, Metafile{}
 }
 
-func (aList *MFList) Diff(bList MFList) *MFDiff {
+func (mfListA *MFList) Diff(mfListB MFList) *MFDiff {
 	add := make([]Metafile, 0)
 	del := make([]Metafile, 0)
 	new := make([]Metafile, 0)
 	old := make([]Metafile, 0)
 
-	for _, b := range bList {
-		ok, a := aList.Include(b)
+	for _, b := range mfListB {
+		ok, a := mfListA.Include(b)
 		if ok {
-			switch{
+			switch {
 			case a.EqVer(b):
 				// skip
 			case a.NeVer(b):
@@ -68,10 +68,10 @@ func (aList *MFList) Diff(bList MFList) *MFDiff {
 		}
 	}
 
-	for _, a := range *aList {
-		ok, b := bList.Include(a)
+	for _, a := range *mfListA {
+		ok, b := mfListB.Include(a)
 		if ok {
-			switch{
+			switch {
 			case b.EqVer(a):
 				// skip
 			case b.NeVer(a):
@@ -88,4 +88,16 @@ func (aList *MFList) Diff(bList MFList) *MFDiff {
 		New: new,
 		Old: old,
 	}
+}
+
+func (mfListA *MFList) Equal(mfListB MFList) bool {
+	mfDiff := mfListA.Diff(mfListB)
+	if len(mfDiff.Add) == 0 &&
+		len(mfDiff.Del) == 0 &&
+		len(mfDiff.New) == 0 &&
+		len(mfDiff.Old) == 0 {
+		return true
+	}
+
+	return false
 }

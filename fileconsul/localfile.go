@@ -1,10 +1,10 @@
 package fileconsul
 
 import (
+	"crypto/md5"
 	"fmt"
 	"os"
 	"path/filepath"
-	"crypto/md5"
 )
 
 type Localfile struct {
@@ -65,4 +65,20 @@ func ReadLFList(basepath string) (LFList, error) {
 	}
 
 	return lfList, nil
+}
+
+func (localfile *Localfile) toMetafile() Metafile {
+	return Metafile{
+		Path: localfile.Path,
+		Url:  "",
+		Hash: localfile.Hash,
+	}
+}
+
+func (lfList *LFList) toMFList() MFList {
+	mfList := make([]Metafile, 0)
+	for _, localfile := range *lfList {
+		mfList = append(mfList, localfile.toMetafile())
+	}
+	return mfList
 }
