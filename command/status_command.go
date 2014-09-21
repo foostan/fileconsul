@@ -49,26 +49,26 @@ func StatusCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	mfList, err := client.ReadMFList(prefix)
+	rfList, err := client.ReadRFList(prefix)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mfDiff := mfList.Diff(lfList.ToMFList())
+	rfDiff := rfList.Diff(lfList.ToRFList())
 
-	for _, metafile := range mfDiff.Eq {
-		println("remote/local:\t" + metafile.Path)
+	for _, remotefile := range rfDiff.Eq {
+		println("remote/local:\t" + remotefile.Path)
 	}
 
-	for _, metafile := range mfDiff.Add {
-		println("remote:\t" + metafile.Path)
+	for _, remotefile := range rfDiff.Add {
+		println("remote:\t" + remotefile.Path)
 	}
 
-	for _, metafile := range mfDiff.Del {
-		println("local:\t" + metafile.Path)
+	for _, remotefile := range rfDiff.Del {
+		println("local:\t" + remotefile.Path)
 	}
 
-	for _, metafile := range mfDiff.New {
-		println("remote/local:(modified)\t" + metafile.Path)
+	for _, remotefile := range rfDiff.New {
+		println("remote/local:(modified)\t" + remotefile.Path)
 	}
 }

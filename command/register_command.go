@@ -60,9 +60,9 @@ func RegisterCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	mfValue := MFValue{Url: url, Hash: hash}
+	rfValue := RFValue{Url: url, Hash: hash}
 
-	err = client.PutKV(filepath.Join(prefix, path), mfValue.ToStr())
+	err = client.PutKV(filepath.Join(prefix, path), rfValue.ToStr())
 	if err != nil {
 		log.Fatal(err)
 	}

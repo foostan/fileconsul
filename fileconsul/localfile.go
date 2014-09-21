@@ -69,19 +69,19 @@ func ReadLFList(basepath string) (LFList, error) {
 	return lfList, nil
 }
 
-func (localfile *Localfile) ToMetafile() Metafile {
-	return Metafile{
+func (localfile *Localfile) ToRemotefile() Remotefile {
+	return Remotefile{
 		Path: localfile.Path,
 		Hash: localfile.Hash,
 	}
 }
 
-func (lfList *LFList) ToMFList() MFList {
-	mfList := make([]Metafile, 0)
+func (lfList *LFList) ToRFList() RFList {
+	rfList := make([]Remotefile, 0)
 	for _, localfile := range *lfList {
-		mfList = append(mfList, localfile.ToMetafile())
+		rfList = append(rfList, localfile.ToRemotefile())
 	}
-	return mfList
+	return rfList
 }
 
 func UrlToHash(url string) (string, error) {

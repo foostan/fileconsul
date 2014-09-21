@@ -11,21 +11,21 @@ func TestReadLFList(t *testing.T) {
 	}
 }
 
-func TestToMFList(t *testing.T) {
+func TestToRFList(t *testing.T) {
 	lfList := LFList{
 		Localfile{Base: "/path/to/base", Path: "/path/to/sample1", Hash: "12"},
 		Localfile{Base: "/path/to/base", Path: "/path/to/sample2", Hash: "34"},
 	}
 
-	ansMFList := MFList{
-		Metafile{Path: "/path/to/sample1", Url: "", Hash: "12"},
-		Metafile{Path: "/path/to/sample2", Url: "", Hash: "34"},
+	ansRFList := RFList{
+		Remotefile{Path: "/path/to/sample1", Url: "", Hash: "12"},
+		Remotefile{Path: "/path/to/sample2", Url: "", Hash: "34"},
 	}
 
-	mfList := lfList.ToMFList()
+	rfList := lfList.ToRFList()
 
-	if !mfList.Equal(ansMFList) {
-		t.Fatalf("expected result is %s, but %s", ansMFList, mfList)
+	if !rfList.Equal(ansRFList) {
+		t.Fatalf("expected result is %s, but %s", ansRFList, rfList)
 	}
 }
 
