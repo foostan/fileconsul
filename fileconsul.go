@@ -10,7 +10,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "fileconsul"
 	app.Version = Version
-	app.Usage = ""
+	app.Usage = "Sharing files in a consul cluster."
 	app.Author = "foostan"
 	app.Email = "ks@fstn.jp"
 	app.Commands = Commands

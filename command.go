@@ -9,22 +9,22 @@ import (
 var Commands = []cli.Command{
 	cli.Command{
 		Name:        "status",
-		Usage:       "",
-		Description: "Show status of local files",
+		Usage:       "Show status of local files",
+		Description: "Show the difference between local files and remote files that is stored in K/V Store of a consul cluster.",
 		Flags:       command.StatusFlags,
 		Action:      command.StatusCommand,
 	},
 	cli.Command{
 		Name:        "pull",
-		Usage:       "",
-		Description: "Pull files from a consul cluster",
+		Usage:       "Pull files from a consul cluster",
+		Description: "Pull remote files from K/V Store of a consul cluster.",
 		Flags:       command.PullFlags,
 		Action:      command.PullCommand,
 	},
 	cli.Command{
 		Name:        "push",
-		Usage:       "",
-		Description: "Push file to a consul cluster",
+		Usage:       "Push file to a consul cluster",
+		Description: "Push remote files to K/V Store of a consul cluster.",
 		Flags:       command.PushFlags,
 		Action:      command.PushCommand,
 	},
