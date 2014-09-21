@@ -98,7 +98,7 @@ func (lfList *LFList) Save() error {
 		// temporally creating
 		tmppath := filepath.Join(localfile.Base, tmpbase, localfile.Path)
 		err := os.MkdirAll(filepath.Dir(tmppath), os.FileMode(0755))
-		if err == nil {
+		if err != nil {
 			return fmt.Errorf("Error while creating '%s' : %s", tmppath, err)
 		}
 
@@ -120,6 +120,43 @@ func (lfList *LFList) Save() error {
 		}
 
 		defer os.RemoveAll(filepath.Join(localfile.Base, tmpbase))
+	}
+
+	return nil
+}
+
+func (lfList *LFList) Remove() error {
+	for _, localfile := range *lfList {
+		path := filepath.Join(localfile.Base, localfile.Path)
+		err := os.RemoveAll(path)
+		if err != nil {
+			return fmt.Errorf("Error while removing '%s' : %s", path, err)
+		}
+		fmt.Printf("Removed '%s'\n", path)
+
+		err = RemoveAllEmpDir(filepath.Dir(path))
+		if err != nil {
+			return fmt.Errorf("Error while removing '%s' : %s", path, err)
+		}
+	}
+
+	return nil
+}
+
+func RemoveAllEmpDir(path string) error {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return err
+	}
+
+	if len(files) == 0 {
+		err := os.Remove(path)
+		if err != nil {
+			return fmt.Errorf("Error while removing '%s' : %s", path, err)
+		}
+		fmt.Printf("Removed '%s'\n", path)
+
+		return RemoveAllEmpDir(filepath.Dir(path))
 	}
 
 	return nil
