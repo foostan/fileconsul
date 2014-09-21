@@ -93,3 +93,17 @@ func TestReadRFList(t *testing.T) {
 		t.Skipf("err: %v", err)
 	}
 }
+
+func TestToLFList(t *testing.T) {
+	rfList := RFList{
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")},
+	}
+
+	lfList := rfList.ToLFList("/path/to/base")
+	ansRFList := lfList.ToRFList("fileconsul")
+
+	if !rfList.Equal(ansRFList) {
+		t.Fatalf("expected result is %s, but %s", ansRFList, lfList)
+	}
+}

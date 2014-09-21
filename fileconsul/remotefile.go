@@ -132,3 +132,20 @@ func (client *Client) ReadRFList(prefix string) (RFList, error) {
 
 	return rfList, nil
 }
+
+func (remotefile *Remotefile) ToLocalfile(base string) Localfile {
+	return Localfile{
+		Base: base,
+		Path: remotefile.Path,
+		Hash: remotefile.Hash,
+		Data: remotefile.Data,
+	}
+}
+
+func (rfList *RFList) ToLFList(base string) LFList {
+	lfList := make([]Localfile, 0)
+	for _, remotefile := range *rfList {
+		lfList = append(lfList, remotefile.ToLocalfile(base))
+	}
+	return lfList
+}
