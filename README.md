@@ -1,4 +1,6 @@
 # Fileconsul
+Publish binaries by bintray: https://bintray.com/foostan/fileconsul/fileconsul/view
+
 Fileconsul is sharing files(configuration file, Service/Check definition scripts, handler scripts and more) in a consul cluster.
 
 ## Usage
