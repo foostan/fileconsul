@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"encoding/base64"
+	"crypto/rand"
+	"io/ioutil"
 )
 
 type Localfile struct {
@@ -83,4 +86,51 @@ func (lfList *LFList) ToRFList(prefix string) RFList {
 		rfList = append(rfList, localfile.ToRemotefile(prefix))
 	}
 	return rfList
+}
+
+func (lfList *LFList) Save() error {
+	tmpbase, err := randstr(32)
+	if err != nil {
+		return fmt.Errorf("Error while generating rand string : %s", err)
+	}
+
+	for _, localfile := range *lfList {
+		// temporally creating
+		tmppath := filepath.Join(localfile.Base, tmpbase, localfile.Path)
+		err := os.MkdirAll(filepath.Dir(tmppath), os.FileMode(0755))
+		if err == nil {
+			return fmt.Errorf("Error while creating '%s' : %s", tmppath, err)
+		}
+
+		err = ioutil.WriteFile(tmppath, localfile.Data, os.FileMode(0644))
+		if err != nil {
+			return fmt.Errorf("Error while creating '%s' : %s", tmppath, err)
+		}
+
+		// atomically moving
+		path := filepath.Join(localfile.Base, localfile.Path)
+		err = os.MkdirAll(filepath.Dir(path), os.FileMode(0755))
+		if err != nil {
+			return fmt.Errorf("Error while creating '%s' : %s", path, err)
+		}
+
+		err =  os.Rename(tmppath, path)
+		if err != nil {
+			return fmt.Errorf("Error while moving '%s' to '%s' : %s", tmppath, path, err)
+		}
+
+		defer os.RemoveAll(filepath.Join(localfile.Base, tmpbase))
+	}
+
+	return nil
+}
+
+func randstr(size int) (string, error){
+	rb := make([]byte,size)
+	_, err := rand.Read(rb)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.URLEncoding.EncodeToString(rb), nil
 }
