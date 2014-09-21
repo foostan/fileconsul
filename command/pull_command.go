@@ -63,18 +63,38 @@ func PullCommand(c *cli.Context) {
 	if lfrfList.Equal(rfList) {
 		fmt.Println("Already up-to-date.")
 	} else {
-		fmt.Println("Changes to be pulled:")
+		fmt.Println("Synchronize remote files:")
 
 		for _, remotefile := range rfDiff.Add {
-			println("\tnew file:\t" + filepath.Join(basepath, remotefile.Path))
-		}
+			localfile := remotefile.ToLocalfile(basepath)
+			err := localfile.Save()
+			if err != nil {
+				log.Fatal(err)
+			}
 
-		for _, remotefile := range rfDiff.Del {
-			println("\tdeleted:\t" + filepath.Join(basepath, remotefile.Path))
+			fmt.Println("\tnew file:\t" + filepath.Join(basepath, remotefile.Path))
 		}
 
 		for _, remotefile := range rfDiff.New {
-			println("\tmodified:\t" + filepath.Join(basepath, remotefile.Path))
+			localfile := remotefile.ToLocalfile(basepath)
+			err := localfile.Save()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Println("\tmodified:\t" + filepath.Join(basepath, remotefile.Path))
 		}
+
+		for _, remotefile := range rfDiff.Del {
+			localfile := remotefile.ToLocalfile(basepath)
+			err := localfile.Remove()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Println("\tdeleted:\t" + filepath.Join(basepath, remotefile.Path))
+		}
+
+		fmt.Println("Already up-to-date.")
 	}
 }

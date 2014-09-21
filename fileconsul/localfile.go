@@ -133,7 +133,6 @@ func (localfile *Localfile) Remove() error {
 	if err != nil {
 		return fmt.Errorf("Error while removing '%s' : %s", path, err)
 	}
-	fmt.Printf("Removed '%s'\n", path)
 
 	err = RemoveAllEmpDir(filepath.Dir(path))
 	if err != nil {
@@ -165,7 +164,6 @@ func RemoveAllEmpDir(path string) error {
 		if err != nil {
 			return fmt.Errorf("Error while removing '%s' : %s", path, err)
 		}
-		fmt.Printf("Removed '%s'\n", path)
 
 		return RemoveAllEmpDir(filepath.Dir(path))
 	}
