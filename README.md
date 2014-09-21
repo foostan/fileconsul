@@ -143,7 +143,7 @@ root@client:/# consul agent -data-dir=/tmp/consul -join 172.17.0.6 &
 
 ### Use fileconsul
 
-#### Check status and push on server
+#### Check status and push on the consul server
 ```
 root@server:/# cd /consul/share/
 root@server:/consul/share# fileconsul status
@@ -168,7 +168,7 @@ push new file:	config/agent/server.json
 push new file:	config/check/loadavg.json
 ```
 
-#### Edit a file and push on client
+#### Edit a file and push on the consul client
 ```
 root@server:/# cd /consul/share/
 root@client:/consul/share# vi bin/apache2   # edit a file
@@ -180,7 +180,7 @@ root@client:/consul/share# fileconsul push
 push modified file:	bin/apache2
 ```
 
-#### Check status and pull on server
+#### Check status and pull on the consul server
 ```
 root@server:/consul/share# fileconsul status
 Changes to be pushed:
