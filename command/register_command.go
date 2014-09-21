@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-var RegisterFlags = []cli.Flag{
+var PushFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "addr",
 		Value: "localhost:8500",
@@ -26,15 +26,15 @@ var RegisterFlags = []cli.Flag{
 	},
 	cli.StringFlag{
 		Name:  "path",
-		Usage: "registered file path, full file path is `prefix + path` in K/V store",
+		Usage: "pushed file path, full file path is `prefix + path` in K/V store",
 	},
 	cli.StringFlag{
 		Name:  "url",
-		Usage: "registered file url",
+		Usage: "pushed file url",
 	},
 }
 
-func RegisterCommand(c *cli.Context) {
+func PushCommand(c *cli.Context) {
 	addr := c.String("addr")
 	dc := c.String("dc")
 	prefix := c.String("prefix")
