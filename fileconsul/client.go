@@ -56,8 +56,8 @@ func (c *Client) ListKV(prefix string) (consulapi.KVPairs, error) {
 	return pairs, nil
 }
 
-func (c *Client) PutKV(prefix string, value string) error {
-	p := &consulapi.KVPair{Key: prefix, Value: []byte(value)}
+func (c *Client) PutKV(prefix string, value []byte) error {
+	p := &consulapi.KVPair{Key: prefix, Value: value}
 	_, err := c.ConsulClient.KV().Put(p, nil)
 	if err != nil {
 		return err

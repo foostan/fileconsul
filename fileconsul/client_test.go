@@ -23,7 +23,7 @@ func TestPutGetDeleteKV(t *testing.T) {
 		t.Skipf("err: %v", err)
 	}
 
-	err = client.PutKV("foo/bar/bazz", "123")
+	err = client.PutKV("foo/bar/bazz", []byte("123"))
 	if err != nil {
 		t.Skipf("err: %v", err)
 	}

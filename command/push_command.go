@@ -6,6 +6,7 @@ import (
 
 	. "github.com/foostan/fileconsul/fileconsul"
 	"path/filepath"
+	"fmt"
 )
 
 var PushFlags = []cli.Flag{
@@ -25,12 +26,9 @@ var PushFlags = []cli.Flag{
 		Usage: "reading file status from Consul's K/V store with the given prefix",
 	},
 	cli.StringFlag{
-		Name:  "path",
-		Usage: "pushed file path, full file path is `prefix + path` in K/V store",
-	},
-	cli.StringFlag{
-		Name:  "url",
-		Usage: "pushed file url",
+		Name:  "basepath",
+		Value: ".",
+		Usage: "base directory path of target files",
 	},
 }
 
@@ -38,14 +36,7 @@ func PushCommand(c *cli.Context) {
 	addr := c.String("addr")
 	dc := c.String("dc")
 	prefix := c.String("prefix")
-	path := c.String("path")
-	if path == "" {
-		log.Fatalf("Error missing flag 'path'")
-	}
-	url := c.String("url")
-	if url == "" {
-		log.Fatalf("Error missing flag 'url'")
-	}
+	basepath := c.String("basepath")
 
 	client, err := NewClient(&ClientConfig{
 		ConsulAddr: addr,
@@ -55,15 +46,31 @@ func PushCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	hash, err:= UrlToHash(url)
+	lfList, err := ReadLFList(basepath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	rfValue := RFValue{Url: url, Hash: hash}
-
-	err = client.PutKV(filepath.Join(prefix, path), rfValue.ToStr())
+	rfList, err := client.ReadRFList(prefix)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	lfrfList := lfList.ToRFList()
+	rfDiff := lfrfList.Diff(rfList)
+
+	for _, remotefile := range rfDiff.Add {
+		fmt.Println("push new file:\t" + filepath.Join(basepath, remotefile.Path))
+		err = client.PutKV(filepath.Join(prefix, remotefile.Path), remotefile.Data)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	for _, remotefile := range rfDiff.New {
+		fmt.Println("push modified file:\t" + filepath.Join(basepath, remotefile.Path))
+		err = client.PutKV(filepath.Join(prefix, remotefile.Path), remotefile.Data)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
