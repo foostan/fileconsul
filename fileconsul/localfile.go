@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"net/http"
-	"bytes"
 )
 
 type Localfile struct {
 	Base string
 	Path string
 	Hash string
+	Data []byte
 }
 
 type LFList []Localfile
@@ -60,7 +59,7 @@ func ReadLFList(basepath string) (LFList, error) {
 
 			hash := fmt.Sprintf("%x", md5.Sum(data))
 
-			lfList = append(lfList, Localfile{Base: basepath, Path: relPath, Hash: hash})
+			lfList = append(lfList, Localfile{Base: basepath, Path: relPath, Hash: hash, Data: data})
 		}
 
 		f.Close()
@@ -73,6 +72,7 @@ func (localfile *Localfile) ToRemotefile() Remotefile {
 	return Remotefile{
 		Path: localfile.Path,
 		Hash: localfile.Hash,
+		Data: localfile.Data,
 	}
 }
 
@@ -82,17 +82,4 @@ func (lfList *LFList) ToRFList() RFList {
 		rfList = append(rfList, localfile.ToRemotefile())
 	}
 	return rfList
-}
-
-func UrlToHash(url string) (string, error) {
-	response, err := http.Get(url)
-	if err != nil {
-		return "", fmt.Errorf("Error while downloading '%s' : %s", url, err)
-	}
-	defer response.Body.Close()
-
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(response.Body)
-
-	return fmt.Sprintf("%x", md5.Sum(buf.Bytes())), nil
 }

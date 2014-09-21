@@ -6,24 +6,24 @@ import (
 
 func TestDiff(t *testing.T) {
 	NewRFList := RFList{
-		Remotefile{Path: "/path/to/sample1", Url: "http://path/to/sample1", Hash: "12"},
-		Remotefile{Path: "/path/to/sample2", Url: "http://path/to/sample2", Hash: "12"},
-		Remotefile{Path: "/path/to/sample5", Url: "http://path/to/sample4", Hash: "90"},
-		Remotefile{Path: "/path/to/sample6", Url: "http://path/to/sample4", Hash: "12"},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample3", Hash: "d35f70211135de265bc7c66df4dd3605", Data: []byte("sample3")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample4", Hash: "247f4201f214ff279da3a24570d642f1", Data: []byte("sample4")},
 	}
 
 	OldRFList := RFList{
-		Remotefile{Path: "/path/to/sample1", Url: "http://path/to/sample1", Hash: "12"},
-		Remotefile{Path: "/path/to/sample2", Url: "http://path/to/sample2", Hash: "34"},
-		Remotefile{Path: "/path/to/sample3", Url: "http://path/to/sample3", Hash: "56"},
-		Remotefile{Path: "/path/to/sample4", Url: "http://path/to/sample4", Hash: "78"},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample5", Hash: "828974c6c954abd2ada226a48c7d6090", Data: []byte("sample5")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample6", Hash: "1d1756986764035547f4a1e1a106d7d1", Data: []byte("sample6")},
 	}
 
 	rfDiff := NewRFList.Diff(OldRFList)
 
 	addMfDiff := RFList{
-		Remotefile{Path: "/path/to/sample5", Url: "http://path/to/sample4", Hash: "90"},
-		Remotefile{Path: "/path/to/sample6", Url: "http://path/to/sample4", Hash: "12"}}
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample3", Hash: "d35f70211135de265bc7c66df4dd3605", Data: []byte("sample3")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample4", Hash: "247f4201f214ff279da3a24570d642f1", Data: []byte("sample4")}}
 	if len(rfDiff.Add) != len(addMfDiff) {
 		t.Fatalf("expected result is %s, but %s", addMfDiff, rfDiff.Add)
 	}
@@ -34,8 +34,8 @@ func TestDiff(t *testing.T) {
 	}
 
 	delMfDiff := RFList{
-		Remotefile{Path: "/path/to/sample3", Url: "http://path/to/sample3", Hash: "56"},
-		Remotefile{Path: "/path/to/sample4", Url: "http://path/to/sample4", Hash: "78"}}
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample5", Hash: "828974c6c954abd2ada226a48c7d6090", Data: []byte("sample5")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample6", Hash: "1d1756986764035547f4a1e1a106d7d1", Data: []byte("sample6")}}
 	if len(rfDiff.Del) != len(delMfDiff) {
 		t.Fatalf("expected result is %s, but %s", delMfDiff, rfDiff.Del)
 	}
@@ -46,7 +46,7 @@ func TestDiff(t *testing.T) {
 	}
 
 	newMfDiff := RFList{
-		Remotefile{Path: "/path/to/sample2", Url: "http://path/to/sample2", Hash: "12"}}
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")}}
 	if len(rfDiff.New) != len(newMfDiff) {
 		t.Fatalf("expected result is %s, but %s", newMfDiff, rfDiff.New)
 	}
@@ -57,7 +57,7 @@ func TestDiff(t *testing.T) {
 	}
 
 	oldMfDiff := RFList{
-		Remotefile{Path: "/path/to/sample2", Url: "http://path/to/sample2", Hash: "34"}}
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")}}
 	if len(rfDiff.Old) != len(oldMfDiff) {
 		t.Fatalf("expected result is %s, but %s", oldMfDiff, rfDiff.Old)
 	}
@@ -68,7 +68,7 @@ func TestDiff(t *testing.T) {
 	}
 
 	eqMfDiff := RFList{
-		Remotefile{Path: "/path/to/sample1", Url: "http://path/to/sample1", Hash: "12"}}
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")}}
 	if len(rfDiff.Eq) != len(eqMfDiff) {
 		t.Fatalf("expected result is %s, but %s", eqMfDiff, rfDiff.Eq)
 	}
@@ -91,15 +91,5 @@ func TestReadRFList(t *testing.T) {
 	_, err = client.ReadRFList("fileconsul")
 	if err != nil {
 		t.Skipf("err: %v", err)
-	}
-}
-
-func TestStrToRFValue(t *testing.T) {
-	str := "http://path/to/sample1,12"
-	rfValue := StrToRFValue(str)
-	res := rfValue.ToStr()
-
-	if str != res {
-		t.Fatalf("expected result is %s, but %s", str, res)
 	}
 }

@@ -13,13 +13,13 @@ func TestReadLFList(t *testing.T) {
 
 func TestToRFList(t *testing.T) {
 	lfList := LFList{
-		Localfile{Base: "/path/to/base", Path: "/path/to/sample1", Hash: "12"},
-		Localfile{Base: "/path/to/base", Path: "/path/to/sample2", Hash: "34"},
+		Localfile{Base: "/path/to/base", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+		Localfile{Base: "/path/to/base", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")},
 	}
 
 	ansRFList := RFList{
-		Remotefile{Path: "/path/to/sample1", Url: "", Hash: "12"},
-		Remotefile{Path: "/path/to/sample2", Url: "", Hash: "34"},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")},
 	}
 
 	rfList := lfList.ToRFList()
@@ -29,9 +29,3 @@ func TestToRFList(t *testing.T) {
 	}
 }
 
-func TestUrlToHash(t *testing.T) {
-	_, err := UrlToHash("https://raw.githubusercontent.com/foostan/fileconsul/master/demo/config/service/apache2.json")
-	if err != nil {
-		t.Skipf("err: %v", err)
-	}
-}

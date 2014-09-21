@@ -3,14 +3,14 @@ package fileconsul
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
+	"crypto/md5"
 )
 
 type Remotefile struct {
 	Prefix string
 	Path   string
-	Url    string
 	Hash   string
+	Data   []byte
 }
 
 type RFList []Remotefile
@@ -23,14 +23,8 @@ type RFDiff struct {
 	Eq  RFList
 }
 
-type RFValue struct {
-	Url  string
-	Hash string
-}
-
 func (a *Remotefile) EqFile(b Remotefile) bool {
-	if a.Path == b.Path &&
-		(a.Url == "" || b.Url == "" || a.Url == b.Url) {
+	if a.Path == b.Path {
 		return true
 	}
 
@@ -131,22 +125,10 @@ func (client *Client) ReadRFList(prefix string) (RFList, error) {
 			return nil, fmt.Errorf("Invalid path '%s': %s", kvpair.Key, err)
 		}
 
-		rfValue := StrToRFValue(string(kvpair.Value))
+		hash := fmt.Sprintf("%x", md5.Sum(kvpair.Value))
 
-		rfList = append(rfList, Remotefile{Prefix: prefix, Path: relPath, Url: rfValue.Url, Hash: rfValue.Hash})
+		rfList = append(rfList, Remotefile{Prefix: prefix, Path: relPath, Hash: hash, Data: kvpair.Value})
 	}
 
 	return rfList, nil
-}
-
-func StrToRFValue(str string) RFValue {
-	splited := strings.Split(str, ",")
-	return RFValue{
-		Url:  splited[0],
-		Hash: splited[1],
-	}
-}
-
-func (rfValue *RFValue) ToStr() string {
-	return strings.Join([]string{rfValue.Url, rfValue.Hash}, ",")
 }
