@@ -2,6 +2,8 @@
 Fileconsul is sharing files(configuration file, Service/Check definition scripts, handler scripts and more) in a consul cluster.
 
 ## Usage
+Run `fileconsul -h` to see the usage help:
+
 ```
 $ fileconsul -h
 NAME:
@@ -25,6 +27,8 @@ GLOBAL OPTIONS:
 ```
 
 ### Status Command
+Run `fileconsul status -h` to see the usage help:
+
 ```
 $ fileconsul status -h
 NAME:
@@ -44,6 +48,8 @@ OPTIONS:
 ```
 
 ### Pull Command
+Run `fileconsul pull -h` to see the usage help:
+
 ```
 $ fileconsul pull -h
 NAME:
@@ -63,6 +69,8 @@ OPTIONS:
 ```
 
 ### Push Command
+Run `fileconsul push -h` to see the usage help:
+
 ```
 $ fileconsul push -h
 NAME:
