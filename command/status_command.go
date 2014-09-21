@@ -3,6 +3,8 @@ package command
 import (
 	"github.com/codegangsta/cli"
 	"log"
+	"fmt"
+	"path/filepath"
 
 	. "github.com/foostan/fileconsul/fileconsul"
 )
@@ -54,21 +56,22 @@ func StatusCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	rfDiff := rfList.Diff(lfList.ToRFList())
+	lfrfList := lfList.ToRFList()
+	rfDiff := lfrfList.Diff(rfList)
 
-	for _, remotefile := range rfDiff.Eq {
-		println("remote/local:\t" + remotefile.Path)
+	if !lfrfList.Equal(rfList) {
+		fmt.Println("Changes to be pushed:\n  (use \"fileconsul pull [command options]\" to reset all files)")
 	}
 
 	for _, remotefile := range rfDiff.Add {
-		println("remote:\t" + remotefile.Path)
+		println("\tnew file:\t" + filepath.Join(basepath, remotefile.Path))
 	}
 
 	for _, remotefile := range rfDiff.Del {
-		println("local:\t" + remotefile.Path)
+		println("\tdeleted:\t" + filepath.Join(basepath, remotefile.Path))
 	}
 
 	for _, remotefile := range rfDiff.New {
-		println("remote/local:(modified)\t" + remotefile.Path)
+		println("\tmodified:\t" + filepath.Join(basepath, remotefile.Path))
 	}
 }
