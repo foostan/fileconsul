@@ -57,7 +57,7 @@ func PullCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	lfrfList := lfList.ToRFList()
+	lfrfList := lfList.ToRFList(prefix)
 	rfDiff := rfList.Diff(lfrfList)
 
 	if lfrfList.Equal(rfList) {

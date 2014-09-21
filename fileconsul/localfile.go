@@ -68,18 +68,19 @@ func ReadLFList(basepath string) (LFList, error) {
 	return lfList, nil
 }
 
-func (localfile *Localfile) ToRemotefile() Remotefile {
+func (localfile *Localfile) ToRemotefile(prefix string) Remotefile {
 	return Remotefile{
+		Prefix: prefix,
 		Path: localfile.Path,
 		Hash: localfile.Hash,
 		Data: localfile.Data,
 	}
 }
 
-func (lfList *LFList) ToRFList() RFList {
+func (lfList *LFList) ToRFList(prefix string) RFList {
 	rfList := make([]Remotefile, 0)
 	for _, localfile := range *lfList {
-		rfList = append(rfList, localfile.ToRemotefile())
+		rfList = append(rfList, localfile.ToRemotefile(prefix))
 	}
 	return rfList
 }

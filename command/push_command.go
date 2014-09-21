@@ -56,7 +56,7 @@ func PushCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	lfrfList := lfList.ToRFList()
+	lfrfList := lfList.ToRFList(prefix)
 	rfDiff := lfrfList.Diff(rfList)
 
 	for _, remotefile := range rfDiff.Add {

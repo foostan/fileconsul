@@ -22,7 +22,7 @@ func TestToRFList(t *testing.T) {
 		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")},
 	}
 
-	rfList := lfList.ToRFList()
+	rfList := lfList.ToRFList("fileconsul")
 
 	if !rfList.Equal(ansRFList) {
 		t.Fatalf("expected result is %s, but %s", ansRFList, rfList)

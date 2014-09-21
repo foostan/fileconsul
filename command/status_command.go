@@ -56,7 +56,7 @@ func StatusCommand(c *cli.Context) {
 		log.Fatal(err)
 	}
 
-	lfrfList := lfList.ToRFList()
+	lfrfList := lfList.ToRFList(prefix)
 	rfDiff := lfrfList.Diff(rfList)
 
 	if !lfrfList.Equal(rfList) {
