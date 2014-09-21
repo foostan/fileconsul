@@ -148,7 +148,7 @@ root@client:/# consul agent -data-dir=/tmp/consul -join 172.17.0.6 &
 root@server:/# cd /consul/share/
 root@server:/consul/share# fileconsul status
 Changes to be pushed:
-  (use "fileconsul pull [command options]" to reset all files)
+  (use "fileconsul pull [command options]" to synchronize remote files)
 	new file:	bin/ntp
 	new file:	bin/apache2
 	new file:	bin/loadavg
@@ -174,7 +174,7 @@ root@server:/# cd /consul/share/
 root@client:/consul/share# vi bin/apache2   # edit a file
 root@client:/consul/share# fileconsul status
 Changes to be pushed:
-  (use "fileconsul pull [command options]" to reset all files)
+  (use "fileconsul pull [command options]" to synchronize remote files)
 	modified:	bin/apache2
 root@client:/consul/share# fileconsul push
 push modified file:	bin/apache2
@@ -184,7 +184,7 @@ push modified file:	bin/apache2
 ```
 root@server:/consul/share# fileconsul status
 Changes to be pushed:
-  (use "fileconsul pull [command options]" to reset all files)
+  (use "fileconsul pull [command options]" to synchronize remote files)
 	modified:	bin/apache2
 root@server:/consul/share# fileconsul pull
 Synchronize remote files:

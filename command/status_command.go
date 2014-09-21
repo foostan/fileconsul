@@ -60,7 +60,7 @@ func StatusCommand(c *cli.Context) {
 	rfDiff := lfrfList.Diff(rfList)
 
 	if !lfrfList.Equal(rfList) {
-		fmt.Println("Changes to be pushed:\n  (use \"fileconsul pull [command options]\" to reset all files)")
+		fmt.Println("Changes to be pushed:\n  (use \"fileconsul pull [command options]\" to synchronize remote files)")
 	}
 
 	for _, remotefile := range rfDiff.Add {
