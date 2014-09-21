@@ -2,12 +2,12 @@ package fileconsul
 
 import (
 	"crypto/md5"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
-	"encoding/base64"
-	"crypto/rand"
-	"io/ioutil"
 )
 
 type Localfile struct {
@@ -74,9 +74,9 @@ func ReadLFList(basepath string) (LFList, error) {
 func (localfile *Localfile) ToRemotefile(prefix string) Remotefile {
 	return Remotefile{
 		Prefix: prefix,
-		Path: localfile.Path,
-		Hash: localfile.Hash,
-		Data: localfile.Data,
+		Path:   localfile.Path,
+		Hash:   localfile.Hash,
+		Data:   localfile.Data,
 	}
 }
 
@@ -88,38 +88,56 @@ func (lfList *LFList) ToRFList(prefix string) RFList {
 	return rfList
 }
 
-func (lfList *LFList) Save() error {
-	tmpbase, err := randstr(32)
+func (localfile *Localfile) Save() error {
+	// temporally creating
+	tmpfile, err := randstr(32)
 	if err != nil {
 		return fmt.Errorf("Error while generating rand string : %s", err)
 	}
+	err = ioutil.WriteFile(tmpfile, localfile.Data, os.FileMode(0644))
+	if err != nil {
+		return fmt.Errorf("Error while creating tmpfile '%s' : %s", tmpfile, err)
+	}
 
+	// atomically moving
+	path := filepath.Join(localfile.Base, localfile.Path)
+	err = os.MkdirAll(filepath.Dir(path), os.FileMode(0755))
+	if err != nil {
+		return fmt.Errorf("Error while creating '%s' : %s", path, err)
+	}
+
+	err = os.Rename(tmpfile, path)
+	if err != nil {
+		return fmt.Errorf("Error while moving '%s' to '%s' : %s", tmpfile, path, err)
+	}
+
+	defer os.RemoveAll(filepath.Join(localfile.Base, tmpfile))
+
+	return nil
+}
+
+func (lfList *LFList) Save() error {
 	for _, localfile := range *lfList {
-		// temporally creating
-		tmppath := filepath.Join(localfile.Base, tmpbase, localfile.Path)
-		err := os.MkdirAll(filepath.Dir(tmppath), os.FileMode(0755))
+		err := localfile.Save()
 		if err != nil {
-			return fmt.Errorf("Error while creating '%s' : %s", tmppath, err)
+			return err
 		}
+	}
 
-		err = ioutil.WriteFile(tmppath, localfile.Data, os.FileMode(0644))
-		if err != nil {
-			return fmt.Errorf("Error while creating '%s' : %s", tmppath, err)
-		}
+	return nil
+}
 
-		// atomically moving
-		path := filepath.Join(localfile.Base, localfile.Path)
-		err = os.MkdirAll(filepath.Dir(path), os.FileMode(0755))
-		if err != nil {
-			return fmt.Errorf("Error while creating '%s' : %s", path, err)
-		}
+func (localfile *Localfile) Remove() error {
+	path := filepath.Join(localfile.Base, localfile.Path)
+	err := os.RemoveAll(path)
+	if err != nil {
+		return fmt.Errorf("Error while removing '%s' : %s", path, err)
+	}
+	fmt.Printf("Removed '%s'\n", path)
 
-		err =  os.Rename(tmppath, path)
-		if err != nil {
-			return fmt.Errorf("Error while moving '%s' to '%s' : %s", tmppath, path, err)
-		}
-
-		defer os.RemoveAll(filepath.Join(localfile.Base, tmpbase))
+	err = RemoveAllEmpDir(filepath.Dir(path))
+	if err != nil {
+		return fmt.Errorf("Error while removing '%s' : %s", path, err)
 	}
 
 	return nil
@@ -127,16 +145,9 @@ func (lfList *LFList) Save() error {
 
 func (lfList *LFList) Remove() error {
 	for _, localfile := range *lfList {
-		path := filepath.Join(localfile.Base, localfile.Path)
-		err := os.RemoveAll(path)
+		err := localfile.Remove()
 		if err != nil {
-			return fmt.Errorf("Error while removing '%s' : %s", path, err)
-		}
-		fmt.Printf("Removed '%s'\n", path)
-
-		err = RemoveAllEmpDir(filepath.Dir(path))
-		if err != nil {
-			return fmt.Errorf("Error while removing '%s' : %s", path, err)
+			return nil
 		}
 	}
 
@@ -162,8 +173,8 @@ func RemoveAllEmpDir(path string) error {
 	return nil
 }
 
-func randstr(size int) (string, error){
-	rb := make([]byte,size)
+func randstr(size int) (string, error) {
+	rb := make([]byte, size)
 	_, err := rand.Read(rb)
 	if err != nil {
 		return "", err
