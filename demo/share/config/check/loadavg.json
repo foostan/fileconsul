@@ -2,7 +2,7 @@
     "check": {
             "id": "loadavg",
             "name": "Check load average",
-            "script": "/bin/loadavg",
+            "script": "/consul/share/bin/loadavg",
             "interval": "10s"
     }
 }

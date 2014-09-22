@@ -3,7 +3,7 @@
         "name": "apache2",
         "tags": [],
         "check": {
-            "script": "/bin/apache2",
+            "script": "/consul/share/bin/apache2",
             "interval": "10s"
         }
     }

@@ -1,0 +1,11 @@
+{
+  "datacenter": "dc1",
+  "data_dir": "/tmp/consul",
+  "watches": [
+    {
+      "type": "keyprefix",
+      "prefix": "fileconsul/",
+      "handler": "fileconsul pull --basepath /consul/share"
+    }
+  ]
+}
