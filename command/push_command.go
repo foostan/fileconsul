@@ -1,12 +1,13 @@
 package command
 
 import (
-	"github.com/codegangsta/cli"
+	"fmt"
 	"log"
+	"path/filepath"
+
+	"github.com/codegangsta/cli"
 
 	. "github.com/foostan/fileconsul/fileconsul"
-	"path/filepath"
-	"fmt"
 )
 
 var PushFlags = []cli.Flag{

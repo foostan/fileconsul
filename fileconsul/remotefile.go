@@ -112,6 +112,10 @@ func (rfListA *RFList) Equal(rfListB RFList) bool {
 	return false
 }
 
+func (rfList *RFList) Empty() bool {
+	return len(*rfList) <= 0
+}
+
 func (client *Client) ReadRFList(prefix string) (RFList, error) {
 	kvpairs, err := client.ListKV(prefix)
 	if err != nil {

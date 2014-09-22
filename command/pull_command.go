@@ -1,8 +1,8 @@
 package command
 
 import (
-	"log"
 	"fmt"
+	"log"
 	"path/filepath"
 
 	"github.com/codegangsta/cli"
@@ -60,9 +60,12 @@ func PullCommand(c *cli.Context) {
 	lfrfList := lfList.ToRFList(prefix)
 	rfDiff := rfList.Diff(lfrfList)
 
-	if lfrfList.Equal(rfList) {
+	switch {
+	case rfList.Empty():
+		fmt.Println("There are no remote files. Skip synchronizing.")
+	case lfrfList.Equal(rfList):
 		fmt.Println("Already up-to-date.")
-	} else {
+	default:
 		fmt.Println("Synchronize remote files:")
 
 		for _, remotefile := range rfDiff.Add {

@@ -1,10 +1,11 @@
 package command
 
 import (
-	"github.com/codegangsta/cli"
-	"log"
 	"fmt"
+	"log"
 	"path/filepath"
+
+	"github.com/codegangsta/cli"
 
 	. "github.com/foostan/fileconsul/fileconsul"
 )
@@ -57,21 +58,43 @@ func StatusCommand(c *cli.Context) {
 	}
 
 	lfrfList := lfList.ToRFList(prefix)
+
 	rfDiff := lfrfList.Diff(rfList)
+	switch {
+	case lfrfList.Equal(rfList):
+	default:
+		fmt.Println("Changes to be pushed:\n  (use \"fileconsul push [command options]\" to synchronize local files)")
 
-	if !lfrfList.Equal(rfList) {
-		fmt.Println("Changes to be pushed:\n  (use \"fileconsul pull [command options]\" to synchronize remote files)")
+		for _, remotefile := range rfDiff.Add {
+			println("\tadd remote file:\t" + filepath.Join(basepath, remotefile.Path))
+		}
+
+		for _, remotefile := range rfDiff.Del {
+			println("\tdelete remote file:\t" + filepath.Join(basepath, remotefile.Path))
+		}
+
+		for _, remotefile := range rfDiff.New {
+			println("\tmodify remote file:\t" + filepath.Join(basepath, remotefile.Path))
+		}
 	}
 
-	for _, remotefile := range rfDiff.Add {
-		println("\tnew file:\t" + filepath.Join(basepath, remotefile.Path))
-	}
+	rfDiff = rfList.Diff(lfrfList)
+	switch {
+	case lfrfList.Equal(rfList):
+	case rfList.Empty():
+	default:
+		fmt.Println("Changes to be pulled:\n  (use \"fileconsul pull [command options]\" to synchronize remote files)")
 
-	for _, remotefile := range rfDiff.Del {
-		println("\tdeleted:\t" + filepath.Join(basepath, remotefile.Path))
-	}
+		for _, remotefile := range rfDiff.Add {
+			println("\tadd local file:\t" + filepath.Join(basepath, remotefile.Path))
+		}
 
-	for _, remotefile := range rfDiff.New {
-		println("\tmodified:\t" + filepath.Join(basepath, remotefile.Path))
+		for _, remotefile := range rfDiff.Del {
+			println("\tdelete local file:\t" + filepath.Join(basepath, remotefile.Path))
+		}
+
+		for _, remotefile := range rfDiff.New {
+			println("\tmodify local file:\t" + filepath.Join(basepath, remotefile.Path))
+		}
 	}
 }
