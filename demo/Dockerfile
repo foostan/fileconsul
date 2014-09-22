@@ -25,4 +25,7 @@ RUN cd /consul && \
 
 ADD share /consul/share
 
+# install sample packages
+RUN apt-get install -y apache2 ntp
+
 CMD ["/bin/bash"]
