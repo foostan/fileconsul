@@ -150,23 +150,33 @@ root@client:/# consul agent -data-dir=/tmp/consul -join 172.17.0.6 &
 root@server:/# cd /consul/share/
 root@server:/consul/share# fileconsul status
 Changes to be pushed:
-  (use "fileconsul pull [command options]" to synchronize remote files)
-	new file:	bin/ntp
-	new file:	bin/apache2
-	new file:	bin/loadavg
-	new file:	config/service/apache2.json
-	new file:	config/service/ntp.json
-	new file:	config/agent/client.json
-	new file:	config/agent/server.json
-	new file:	config/check/loadavg.json
+  (use "fileconsul push [command options]" to synchronize local files)
+	add remote file:	bin/ntp
+	add remote file:	bin/apache2
+	add remote file:	bin/loadavg
+	add remote file:	config/service/apache2.json
+	add remote file:	config/service/ntp.json
+	add remote file:	config/template/server/check_loadavg.json
+	add remote file:	config/template/server/service_apache2.json
+	add remote file:	config/template/server/agent_server.json
+	add remote file:	config/template/server/service_ntp.json
+	add remote file:	config/template/client/check_loadavg.json
+	add remote file:	config/template/client/agent_client.json
+	add remote file:	config/template/client/service_ntp.json
+	add remote file:	config/check/loadavg.json
 root@server:/consul/share# fileconsul push
 push new file:	bin/ntp
 push new file:	bin/apache2
 push new file:	bin/loadavg
 push new file:	config/service/apache2.json
 push new file:	config/service/ntp.json
-push new file:	config/agent/client.json
-push new file:	config/agent/server.json
+push new file:	config/template/server/check_loadavg.json
+push new file:	config/template/server/service_apache2.json
+push new file:	config/template/server/agent_server.json
+push new file:	config/template/server/service_ntp.json
+push new file:	config/template/client/check_loadavg.json
+push new file:	config/template/client/agent_client.json
+push new file:	config/template/client/service_ntp.json
 push new file:	config/check/loadavg.json
 ```
 
@@ -176,8 +186,11 @@ root@server:/# cd /consul/share/
 root@client:/consul/share# vi bin/apache2   # edit a file
 root@client:/consul/share# fileconsul status
 Changes to be pushed:
+  (use "fileconsul push [command options]" to synchronize local files)
+	modify remote file:	bin/apache2
+Changes to be pulled:
   (use "fileconsul pull [command options]" to synchronize remote files)
-	modified:	bin/apache2
+	modify local file:	bin/apache2
 root@client:/consul/share# fileconsul push
 push modified file:	bin/apache2
 ```
@@ -186,8 +199,11 @@ push modified file:	bin/apache2
 ```
 root@server:/consul/share# fileconsul status
 Changes to be pushed:
+  (use "fileconsul push [command options]" to synchronize local files)
+	modify remote file:	bin/apache2
+Changes to be pulled:
   (use "fileconsul pull [command options]" to synchronize remote files)
-	modified:	bin/apache2
+	modify local file:	bin/apache2
 root@server:/consul/share# fileconsul pull
 Synchronize remote files:
 	modified:	bin/apache2
