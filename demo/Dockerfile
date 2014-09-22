@@ -4,6 +4,7 @@ MAINTAINER foostan ks@fstn.jp
 
 RUN apt-get update
 RUN apt-get install -y unzip wget curl
+RUN apt-get install -y apache2 ntp # install sample packages
 
 RUN mkdir /consul
 
@@ -24,8 +25,5 @@ RUN cd /consul && \
     mv fileconsul /usr/local/bin
 
 ADD share /consul/share
-
-# install sample packages
-RUN apt-get install -y apache2 ntp
 
 CMD ["/bin/bash"]
