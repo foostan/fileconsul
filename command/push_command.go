@@ -1,8 +1,8 @@
 package command
 
 import (
-	"fmt"
 	"log"
+	"fmt"
 	"path/filepath"
 
 	"github.com/codegangsta/cli"
@@ -61,15 +61,22 @@ func PushCommand(c *cli.Context) {
 	rfDiff := lfrfList.Diff(rfList)
 
 	for _, remotefile := range rfDiff.Add {
-		fmt.Println("push new file:\t" + filepath.Join(basepath, remotefile.Path))
+		fmt.Println("add remote file:\t" + filepath.Join(basepath, remotefile.Path))
 		err = client.PutKV(filepath.Join(prefix, remotefile.Path), remotefile.Data)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 	for _, remotefile := range rfDiff.New {
-		fmt.Println("push modified file:\t" + filepath.Join(basepath, remotefile.Path))
+		fmt.Println("modify remote file:\t" + filepath.Join(basepath, remotefile.Path))
 		err = client.PutKV(filepath.Join(prefix, remotefile.Path), remotefile.Data)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	for _, remotefile := range rfDiff.Del {
+		fmt.Println("delete remote file:\t" + filepath.Join(basepath, remotefile.Path))
+		err = client.DeleteKV(filepath.Join(prefix, remotefile.Path))
 		if err != nil {
 			log.Fatal(err)
 		}
