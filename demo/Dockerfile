@@ -19,8 +19,8 @@ RUN cd /consul && \
 
 RUN cd /consul && \
     wget https://dl.bintray.com/mitchellh/consul/0.4.0_linux_amd64.zip && \
-    wget http://dl.bintray.com/foostan/fileconsul/0.1.0_linux_amd64.zip && \
-    unzip 0.1.0_linux_amd64.zip && \
+    wget http://dl.bintray.com/foostan/fileconsul/0.1.1_linux_amd64.zip && \
+    unzip 0.1.1_linux_amd64.zip && \
     mv fileconsul /usr/local/bin
 
 ADD share /consul/share
