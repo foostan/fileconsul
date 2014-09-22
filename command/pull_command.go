@@ -75,7 +75,7 @@ func PullCommand(c *cli.Context) {
 				log.Fatal(err)
 			}
 
-			fmt.Println("\tnew file:\t" + filepath.Join(basepath, remotefile.Path))
+			fmt.Println("\tadd local file:\t" + filepath.Join(basepath, remotefile.Path))
 		}
 
 		for _, remotefile := range rfDiff.New {
@@ -85,7 +85,7 @@ func PullCommand(c *cli.Context) {
 				log.Fatal(err)
 			}
 
-			fmt.Println("\tmodified:\t" + filepath.Join(basepath, remotefile.Path))
+			fmt.Println("\tmodify local file:\t" + filepath.Join(basepath, remotefile.Path))
 		}
 
 		for _, remotefile := range rfDiff.Del {
@@ -95,7 +95,7 @@ func PullCommand(c *cli.Context) {
 				log.Fatal(err)
 			}
 
-			fmt.Println("\tdeleted:\t" + filepath.Join(basepath, remotefile.Path))
+			fmt.Println("\tdelete local file:\t" + filepath.Join(basepath, remotefile.Path))
 		}
 
 		fmt.Println("Already up-to-date.")
