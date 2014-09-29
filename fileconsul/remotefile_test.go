@@ -107,3 +107,48 @@ func TestToLFList(t *testing.T) {
 		t.Fatalf("expected result is %s, but %s", ansRFList, lfList)
 	}
 }
+
+func TestFilter(t *testing.T){
+	rfList := RFList{
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample3", Hash: "d35f70211135de265bc7c66df4dd3605", Data: []byte("sample3")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample4", Hash: "247f4201f214ff279da3a24570d642f1", Data: []byte("sample4")},
+	}
+
+	ans1 := RFList{
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample3", Hash: "d35f70211135de265bc7c66df4dd3605", Data: []byte("sample3")},
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample4", Hash: "247f4201f214ff279da3a24570d642f1", Data: []byte("sample4")},
+	}
+	res1, err := rfList.Filter("/path")
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if !ans1.Equal(res1) {
+		t.Fatalf("expected result is %s, but %s", ans1, res1)
+	}
+
+	ans2 := RFList{
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample1", Hash: "ac46374a846d97e22f917b6863f690ad", Data: []byte("sample1")},
+	}
+	res2, err := rfList.Filter("/path/to/sample1")
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if !ans2.Equal(res2) {
+		t.Fatalf("expected result is %s, but %s", ans2, res2)
+	}
+
+	ans3 := RFList{
+		Remotefile{Prefix: "fileconsul", Path: "/path/to/sample2", Hash: "656b38f3402a1e8b4211fac826efd433", Data: []byte("sample2")},
+	}
+	res3, err := rfList.Filter("/*/sample*")
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if !ans3.Equal(res3) {
+		t.Fatalf("expected result is %s, but %s", ans3, res3)
+	}
+}

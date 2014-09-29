@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 	"crypto/md5"
+	"strings"
+	"os"
 )
 
 type Remotefile struct {
@@ -152,4 +154,39 @@ func (rfList *RFList) ToLFList(base string) LFList {
 		lfList = append(lfList, remotefile.ToLocalfile(base))
 	}
 	return lfList
+}
+
+func (rfList *RFList) Filter(pattern string) (RFList, error) {
+	newRFList := make([]Remotefile, 0)
+	for _, remotefile := range *rfList {
+		match, err := matchPath(pattern, remotefile.Path)
+		if err != nil {
+			return nil, err
+		}
+		if match {
+			newRFList = append(newRFList, remotefile)
+		}
+	}
+
+	return newRFList, nil
+}
+
+func matchPath(pattern string, path string) (bool, error) {
+	patternList := strings.Split(pattern, string(os.PathSeparator))
+	pathList := strings.Split(path, string(os.PathSeparator))
+	if len(patternList) > len(pathList) {
+		return false, nil
+	}
+
+	for i := 0; i < len(patternList); i++ {
+		match, err := filepath.Match(patternList[i], pathList[i])
+		if err != nil {
+			return false, err
+		}
+		if !match {
+			return false, nil
+		}
+	}
+
+	return true, nil
 }

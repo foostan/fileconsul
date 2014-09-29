@@ -34,6 +34,9 @@ var StatusFlags = []cli.Flag{
 }
 
 func StatusCommand(c *cli.Context) {
+	args := c.Args()
+	pattern := args.First()
+
 	addr := c.String("addr")
 	dc := c.String("dc")
 	prefix := c.String("prefix")
@@ -58,6 +61,18 @@ func StatusCommand(c *cli.Context) {
 	}
 
 	lfrfList := lfList.ToRFList(prefix)
+
+	if pattern != "" {
+		rfList, err = rfList.Filter(pattern)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		lfrfList, err = lfrfList.Filter(pattern)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	rfDiff := lfrfList.Diff(rfList)
 	switch {
